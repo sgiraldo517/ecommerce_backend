@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router()
 
 //! Import clase CartManager
-const CartManager = require('../utils/cartManager.js')
+const CartManager = require('../../utils/cartManager.js')
 const cartManager = new CartManager()
 
 //! Endpoints

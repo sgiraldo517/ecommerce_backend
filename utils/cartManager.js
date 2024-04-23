@@ -2,7 +2,7 @@ const fs = require('fs').promises;
 
 class CartManager {
     constructor() {
-        this.path = "./public/carritos.json"
+        this.path = "./src/public/carritos.json"
     }
 
     async addCarrito( products = [] ) {

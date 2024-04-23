@@ -5,14 +5,12 @@ const app = express()
 const PORT = 8080
 
 //! Importar rutas
-const productsRouter = require('../routes/products.router')
-const cartsRouter = require('../routes/carts.router.js')
+const productsRouter = require('./routes/products.router')
+const cartsRouter = require('./routes/carts.router')
 
 //* Middleware
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-
-app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/api/products/', productsRouter)
 app.use('/api/carts/', cartsRouter)

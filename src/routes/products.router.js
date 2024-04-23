@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router()
 
 //! Import clase ProductManager
-const ProductManager = require('../utils/productManager.js')
+const ProductManager = require('../../utils/productManager.js')
 const productManager = new ProductManager()
 
 //! Endpoints
