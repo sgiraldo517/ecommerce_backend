@@ -1,74 +1,34 @@
-const express = require('express');
-const router = express.Router()
+import { Router } from 'express';
 
-//! Import clase ProductManager
-const ProductManager = require('../../utils/productManager.js')
-const productManager = new ProductManager()
+//! Import productsModel
+import productsModel from '../models/products.models.js'
 
-//! Endpoints
+const router = Router()
 
 router.get('/', async(req, res) => {
     try {
-        let limit = parseInt(req.query.limit)
-        const arrayProductos = await productManager.getProducts()
-        if(!limit) {
-            res.json(arrayProductos)
-        } else {
-            const arrayFiltrado = arrayProductos.slice(0, limit)
-            res.json(arrayFiltrado)
-        }
-    } catch (e) {
-        res.status(500).send( "Error al consultar productos " + e.message);
-    }
-})
+        let limit = parseInt(req.query.limit) || 10;
+        let page = parseInt(req.query.page) || 1;
+        let sort = req.query.sort;
+        let category = req.query.category;
+        let disponibilidad = parseInt(req.query.disponibilidad);
 
-router.get('/:pid', async(req, res) =>{
-    try {
-        let productId = parseInt(req.params.pid)
-        const productoBuscado = await productManager.getProductById(productId)
-        if (!productoBuscado) {
-            res.status(404).send(`Error: El producto con el id ${productId} no existe en la base de datos.`);
-            return; 
-        }
-        res.json(productoBuscado);
-    } catch (e) {
-        res.status(500).send( "Error al encontrar producto " + e.message);
-    }
-})
+        const query = {};
+        const options = { page, limit };
 
-router.post('/', async(req, res) => {
-    try {
-        const { title, description, code, price, status, stock, category, thumbnail } = req.body;
-        if (!title || !description || !code || !price || !stock || !category) {
-            return res.status(400).send("Error: faltan algunas propiedades del producto obligatorias");
-        }
-        await productManager.addProduct(title, description, code, price, status, stock, category, thumbnail);
-        return res.status(200).send(`El producto ${title} fue agregado exitosamente`)
+        if (sort) options.sort = { price: sort === 'asc' ? 'asc' : 'desc' };
+        if(category) query.category=category
+        if(disponibilidad) query.stock= disponibilidad
+        
+        let productos = await productsModel.paginate(query, options)
+        productos.status = 'success'
+        productos.prevLink = productos.hasPrevPage?`http://localhost:8080/api/products?page=${productos.prevPage}`:null;
+        productos.nextLink = productos.hasNextPage?`http://localhost:8080/api/products?page=${productos.nextPage}`:null;
+        res.json(productos)
     } catch (e) {
-        res.status(500).send("Error al agregar producto: " + e.message);
-    }
-})
-
-router.put('/:pid', async(req, res) =>{
-    try {
-        let productId = parseInt(req.params.pid)
-        const newData = req.body;
-        const productoActualizado = await productManager.updateProduct(productId, newData)
-        res.status(200).send(productoActualizado)
-    } catch (e) {
-        res.status(500).send( "Error al actualizar el producto " + e.message);
-    }
-})
-
-router.delete('/:pid', async(req, res) =>{
-    try {
-        let productId = parseInt(req.params.pid)
-        const productoEliminado = await productManager.deleteProduct(productId)
-        res.status(200).send(productoEliminado)
-    } catch (e) {
-        res.status(500).send( "Error al eliminar el producto " + e.message);
+        res.status(500).json( { status: 'error', payload: e.message});
     }
 })
 
 
-module.exports = router
+export default router

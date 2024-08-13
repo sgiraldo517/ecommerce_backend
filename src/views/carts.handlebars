@@ -1,0 +1,38 @@
+<div>
+    <h1 class="text-center py-4">Carrito</h1>
+    <div class="container">
+        <div class="row">
+            {{#each payload}}
+                <div class="col-md-4 mb-4"> 
+                    <div class="card h-100"> 
+                        <div class="card-body">
+                            <h3><span class="small fst-italic text-black-50">Producto: </span>{{this.product.title}}</h3>
+                            <p><span class="small fst-italic text-black-50">Descripcion: </span>{{this.product.description}}</p>
+                            <p><span class="small fst-italic text-black-50">Precio: </span>${{this.product.price}}</p>
+                            <p><span class="small fst-italic text-black-50">Cantidad: </span>{{this.quantity}}</p>
+                        </div>
+                    </div>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+    <div>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                {{#if hasPrevPage}}
+                    <li class="page-item">
+                        <a class="page-link" href={{this.prevLink}}>< Anterior</a>
+                    </li>
+                {{/if}}
+                &nbsp;
+                <li class="page-item"><a class="page-link active">{{this.page}}</a></li>
+                &nbsp;
+                {{#if hasNextPage}}
+                    <li class="page-item">
+                        <a class="page-link" href={{this.nextLink}}>Siguiente ></a>
+                    </li>
+                {{/if}} 
+            </ul>
+        </nav>
+    </div>
+</div>
